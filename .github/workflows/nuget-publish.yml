@@ -31,7 +31,7 @@ jobs:
 
   test:
     needs: build
-    runs-on: ununtu-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         framework: [net6.0, net7.0, net8.0, net9.0]
