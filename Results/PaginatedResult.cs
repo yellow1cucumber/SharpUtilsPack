@@ -141,7 +141,7 @@
             foreach (var item in this.Value)
             {
                 var r = binder(item);
-                if (!r.IsFailure)
+                if (r.IsFailure)
                     return PaginatedResult<U>.Failure(r.ErrorMessage ?? "Unknown error");
 
                 results.Add(r.Value!);
@@ -162,6 +162,7 @@
         {
             if (this.IsFailure || this.Value == null)
                 return PaginatedResult<U>.Failure(this.ErrorMessage ?? "Unknown error");
+
             var results = new List<U>();
             foreach (var item in this.Value)
             {
