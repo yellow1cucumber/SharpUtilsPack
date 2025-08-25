@@ -1,4 +1,4 @@
-name: Build and Publish NuGet Package
+name: Build, Test and Publish NuGet Package
 
 on:
   release:
@@ -24,9 +24,9 @@ jobs:
         run: dotnet build Results/Results.csproj --configuration Release
 
       - name: Test all frameworks
-        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --no-build --verbosity normal
+        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --verbosity normal
 
-      - name: Pack all frameworks
+      - name: Pack NuGet package
         run: dotnet pack Results/Results.csproj --configuration Release -o ./nupkgs
 
       - name: Publish to NuGet
