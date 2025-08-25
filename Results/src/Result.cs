@@ -309,10 +309,7 @@
         /// This method ensures that the hash code is consistent with the equality definition
         /// provided by <see cref="Equals(object)"/>.
         /// </remarks>
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Value, ErrorMessage, IsSuccess);
-        }
+        public override int GetHashCode() => HashCode.Combine(Value, ErrorMessage, IsSuccess);
         #endregion
     }
 
