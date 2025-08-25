@@ -9,17 +9,17 @@
         /// <summary>
         /// Gets the current page number (1-based).
         /// </summary>
-        public uint Page { get; init; }
+        public uint Page { get; }
 
         /// <summary>
         /// Gets the number of items per page.
         /// </summary>
-        public uint PageSize { get; init; }
+        public uint PageSize { get; }
 
         /// <summary>
         /// Gets the total number of items across all pages.
         /// </summary>
-        public uint TotalItems { get; init; }
+        public uint TotalItems { get; }
 
         /// <summary>
         /// Gets the total number of pages, calculated from TotalItems and PageSize.
