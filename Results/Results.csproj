@@ -9,15 +9,15 @@
 
 		<!-- Package Information -->
 		<PackageId>SharpUtils.Results</PackageId>
-		<Version>1.0.0</Version>
+		<Version>1.0.2</Version>
 		<Authors>Yellow1Cucumber</Authors>
 		<Company>Yellow1Cucumber</Company>
 		<Description>A comprehensive functional results library for .NET, providing robust error handling patterns and composition primitives</Description>
 		<PackageTags>result;functional;error-handling;railway-oriented;monad;paginated</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/yourusername/UtilsPack</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/yourusername/UtilsPack</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/yellow1cucumber/UtilsPack</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yellow1cucumber/UtilsPack</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageIcon>icon.png</PackageIcon>
 
