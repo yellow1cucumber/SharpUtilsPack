@@ -16,8 +16,8 @@
 		<PackageTags>result;functional;error-handling;railway-oriented;monad;paginated</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/yellow1cucumber/UtilsPack</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/yellow1cucumber/UtilsPack</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/yellow1cucumber/SharpUtilsPack</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yellow1cucumber/SharpUtilsPack</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageIcon>icon.png</PackageIcon>
 
