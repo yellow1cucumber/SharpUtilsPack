@@ -56,11 +56,7 @@ namespace Results.Tests
             foreach (var (totalItems, pageSize, expectedPages) in testCases)
             {
                 // Arrange
-                var result = PaginatedResult<int>.Empty(1, pageSize);
-
-                // Use reflection to set TotalItems (since it's init-only)
-                var property = typeof(PaginatedResult<int>).GetProperty("TotalItems");
-                property?.SetValue(result, totalItems);
+                var result = PaginatedResult<int>.Success(Array.Empty<int>(), 1, pageSize, totalItems);
 
                 // Assert
                 Assert.Equal(expectedPages, result.TotalPages);
