@@ -1,4 +1,4 @@
-name: Build, Test and Publish NuGet Package
+name: Build, Test and Publish NuGet Package (Parallel Test, Multi-Target)
 
 on:
   release:
@@ -10,12 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup .NET
+      # Устанавливаем все нужные SDK для мультифреймворк сборки
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
 
       - name: Restore dependencies
         run: dotnet restore
@@ -23,14 +29,42 @@ jobs:
       - name: Build all frameworks
         run: dotnet build Results/Results.csproj --configuration Release
 
-      - name: Test all frameworks
-        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --verbosity normal
-
-      - name: Pack NuGet package
+      - name: Pack NuGet package (multi-target)
         run: dotnet pack Results/Results.csproj --configuration Release -o ./nupkgs
 
-      - name: Publish to NuGet
-        if: github.event_name == 'release'
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        framework: [net6.0, net7.0, net8.0, net9.0]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Test for ${{ matrix.framework }}
+        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --framework ${{ matrix.framework }} --verbosity normal
+
+  publish:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Push package to NuGet
         run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
 
       - name: Upload artifacts
