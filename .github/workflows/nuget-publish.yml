@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        framework: [net6.0, net7.0, net8.0, net9.0, netstandard2.1]
+        framework: [net6.0, net7.0, net8.0, net9.0]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
