@@ -1,0 +1,43 @@
+name: Build and Publish NuGet Package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: |
+          6.0.x
+          7.0.x
+          8.0.x
+          9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Pack
+      run: dotnet pack Results/Results.csproj --configuration Release --no-build -o ./nupkgs
+
+    - name: Publish to NuGet
+      if: github.event_name == 'release'
+      run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-packages
+        path: ./nupkgs/*.nupkg

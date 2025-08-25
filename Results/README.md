@@ -4,9 +4,27 @@ A comprehensive functional results library for .NET 9 and C# 13, providing robus
 
 *[Russian version (Русская версия)](README.ru.md)*
 
+[![NuGet](https://img.shields.io/nuget/v/SharpUtils.Results.svg)](https://www.nuget.org/packages/SharpUtils.Results/)
+[![Build Status](https://github.com/yourusername/UtilsPack/workflows/Build%20and%20Test/badge.svg)](https://github.com/yourusername/UtilsPack/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Overview
 
 Results is a lightweight library implementing the Result pattern (also known as the Either monad in functional programming). It encapsulates the outcome of an operation that can either succeed with a value or fail with an error message, making error handling more explicit and predictable.
+
+## Installation
+
+Install the package from NuGet:
+
+```
+dotnet add package SharpUtils.Results
+```
+
+Or via the NuGet Package Manager:
+
+```
+Install-Package SharpUtils.Results
+```
 
 ## Key Components
 
@@ -193,23 +211,25 @@ result.Match(
 );
 ```
 
-## Target Platform
+## Target Frameworks
 
 - **.NET 9.0**
-- **C# 13.0**
+- **.NET 8.0**
+- **.NET 7.0**
+- **.NET 6.0**
+- **.NET Standard 2.1**
+- **.NET Standard 2.0**
 
-## Installation
+## Contributing
 
-Add a project reference to your solution:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-```xml
-<ProjectReference Include="Results\Results.csproj" />
-```
-
-## Testing
-
-Comprehensive unit tests are provided in the `Results.Tests` project using xUnit.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License (or specify your preferred license)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
