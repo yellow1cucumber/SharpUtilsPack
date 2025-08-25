@@ -31,7 +31,7 @@ jobs:
 
   test:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ununtu-latest
     strategy:
       matrix:
         framework: [net6.0, net7.0, net8.0, net9.0]
@@ -52,12 +52,12 @@ jobs:
         run: dotnet restore
         
       - name: Test for ${{ matrix.framework }}
-        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --framework ${{ matrix.framework }} --verbosity normal --no-restore
+        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --framework ${{ matrix.framework }} --verbosity normal
 
   publish:
     needs: [build, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
