@@ -35,7 +35,7 @@
         /// <param name="page">The current page number.</param>
         /// <param name="pageSize">The number of items per page.</param>
         /// <param name="totalItems">The total number of items across all pages.</param>
-        private PaginatedResult(IEnumerable<T>? value, 
+        protected PaginatedResult(IEnumerable<T>? value, 
                                 bool isSuccess, 
                                 string? errorMessage, 
                                 uint page, 
