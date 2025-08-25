@@ -1,5 +1,4 @@
-name: Build and Publish NuGet Package
-
+name: Build, Test and Publish NuGet Package (Parallel Test, Multi-Target)
 on:
   release:
     types: [published]
@@ -8,36 +7,63 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          6.0.x
-          7.0.x
-          8.0.x
-          9.0.x
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+            
+      - name: Build and Pack NuGet package (multi-target)
+        run: dotnet pack Results/Results.csproj --configuration Release -o ./nupkgs
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./nupkgs/*.nupkg
 
-    - name: Restore dependencies
-      run: dotnet restore
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        framework: [net6.0, net7.0, net8.0, net9.0]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+            
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Test for ${{ matrix.framework }}
+        run: dotnet test Results.Tests/Results.Tests.csproj --configuration Release --framework ${{ matrix.framework }} --verbosity normal
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal
-
-    - name: Pack
-      run: dotnet pack Results/Results.csproj --configuration Release --no-build -o ./nupkgs
-
-    - name: Publish to NuGet
-      if: github.event_name == 'release'
-      run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-packages
-        path: ./nupkgs/*.nupkg
+  publish:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./nupkgs
+          
+      - name: Push package to NuGet
+        run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

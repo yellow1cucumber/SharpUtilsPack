@@ -5,7 +5,7 @@ A comprehensive functional results library for .NET 9 and C# 13, providing robus
 *[Russian version (Русская версия)](README.ru.md)*
 
 [![NuGet](https://img.shields.io/nuget/v/SharpUtils.Results.svg)](https://www.nuget.org/packages/SharpUtils.Results/)
-[![Build Status](https://github.com/yourusername/UtilsPack/workflows/Build%20and%20Test/badge.svg)](https://github.com/yourusername/UtilsPack/actions)
+[![Build Status](https://github.com/yel/UtilsPack/workflows/Build%20and%20Test/badge.svg)](https://github.com/yellow1cucumber/SharpUtilsPack/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
