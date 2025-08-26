@@ -188,12 +188,11 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
 
                 var totalItems = this.DbSet.Count();
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = this.DbSet.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -216,12 +215,11 @@ namespace SharpUtils.Repository.Generic
 
                 var query = this.DbSet.Where(predicate);
                 var totalItems = query.Count();
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -248,12 +246,11 @@ namespace SharpUtils.Repository.Generic
 
                 var query = ascending ? this.DbSet.OrderBy(orderBy) : this.DbSet.OrderByDescending(orderBy);
                 var totalItems = query.Count();
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -284,12 +281,11 @@ namespace SharpUtils.Repository.Generic
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
                 
                 var totalItems = query.Count();
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -321,12 +317,11 @@ namespace SharpUtils.Repository.Generic
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
                 
                 var totalItems = query.Count();
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -772,16 +767,15 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
 
                 var totalItems = await this.DbSet.CountAsync(cancellationToken).ConfigureAwait(false);
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = await this.DbSet
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -808,16 +802,15 @@ namespace SharpUtils.Repository.Generic
 
                 var query = this.DbSet.Where(predicate);
                 var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = await query
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -845,16 +838,15 @@ namespace SharpUtils.Repository.Generic
 
                 var query = ascending ? this.DbSet.OrderBy(orderBy) : this.DbSet.OrderByDescending(orderBy);
                 var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = await query
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -886,16 +878,15 @@ namespace SharpUtils.Repository.Generic
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
 
                 var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = await query
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
@@ -928,16 +919,15 @@ namespace SharpUtils.Repository.Generic
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
 
                 var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
-                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
                 var items = await query
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return totalItems.CompareTo(0) == 0
-                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
-                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+                return totalItems == 0
+                    ? PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize)
+                    : PaginatedResult<TEntity>.Success(items, (uint)pageNumber, (uint)pageSize, (uint)totalItems);
             }
             catch (Exception ex)
             {
