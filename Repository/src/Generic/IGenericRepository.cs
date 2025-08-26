@@ -855,14 +855,6 @@ namespace SharpUtils.Repository.Generic
 
         #region Validation and Safety
         /// <summary>
-        /// Performs a soft delete on the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity to soft delete.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A Result indicating whether the operation succeeded.</returns>
-        Task<Result<bool>> SoftDeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Rolls back all changes made in the current transaction.
         /// </summary>
         /// <returns>A Result indicating whether the rollback succeeded.</returns>
