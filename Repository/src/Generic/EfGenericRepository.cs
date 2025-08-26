@@ -3159,12 +3159,12 @@ namespace SharpUtils.Repository.Generic
         /// </summary>
         /// <typeparam name="TProjection">The type to project to.</typeparam>
         /// <param name="projection">The projection expression that defines how to map <typeparamref name="TEntity"/> to <typeparamref name="TProjection"/>.</param>
-        /// <param name="predicate">An optional filter predicate to select which entities to project. If null, all entities are considered.</param>
+        /// <param name="predicate">A filter predicate to select which entities to project.</param>
         /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// A task representing the asynchronous operation, containing a <see cref="Result{TProjection}"/>:
         /// <list type="bullet">
-        /// <item><description>On success: Contains the projected value or default if no entity matches.</description></item>
+        /// <item><description>On success: Contains the projected value.</description></item>
         /// <item><description>On failure: Contains an error message describing what went wrong.</description></item>
         /// </list>
         /// </returns>
@@ -3172,6 +3172,7 @@ namespace SharpUtils.Repository.Generic
         /// <para>
         /// This method is useful for retrieving a single projected value from the entity set, such as a DTO or a scalar.
         /// If <paramref name="predicate"/> is null, an <see cref="ArgumentNullException"/> is thrown.
+        /// If <paramref name="projection"/> is null, an <see cref="ArgumentNullException"/> is thrown.
         /// </para>
         /// <para>
         /// Example usage:
