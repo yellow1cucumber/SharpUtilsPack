@@ -936,6 +936,59 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Update Operations
+
+        public async Task<Result<TEntity>> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entity == null)
+                    throw new ArgumentNullException(nameof(entity));
+
+                var entry = this.Context.Entry(entity);
+                if (entry.State == EntityState.Detached)
+                {
+                    this.DbSet.Attach(entity);
+                }
+
+                entry.State = EntityState.Modified;
+                this.OnEntityChanged(entity, EntityChangeType.Modified);
+                return Result<TEntity>.Success(entity);
+            }
+            catch (Exception ex)
+            {
+                return Result<TEntity>.Failure($"Failed to update entity: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entities == null)
+                    throw new ArgumentNullException(nameof(entities));
+
+                var entityList = entities.ToList();
+                foreach (var entity in entityList)
+                {
+                    var entry = this.Context.Entry(entity);
+                    if (entry.State == EntityState.Detached)
+                    {
+                        this.DbSet.Attach(entity);
+                    }
+                    entry.State = EntityState.Modified;
+                    this.OnEntityChanged(entity, EntityChangeType.Modified);
+                }
+                return Result<IEnumerable<TEntity>>.Success(entityList);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to update entities: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Helper Methods
