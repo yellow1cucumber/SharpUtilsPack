@@ -337,7 +337,7 @@ public class TransactionTests : IDisposable
             // Bulk update some entities
             var updateResult = await repo.BulkUpdateAsync(
                 e => e.IsActive,
-                e => new TestEntity { Name = "Bulk Updated" });
+                e => new TestEntity { Id = e.Id, Name = "Bulk Updated", Category = e.Category, CreatedAt = e.CreatedAt, IsActive = e.IsActive, Price = e.Price });
 
             if (updateResult.IsFailure)
                 return Result<int>.Failure("Bulk update failed");
