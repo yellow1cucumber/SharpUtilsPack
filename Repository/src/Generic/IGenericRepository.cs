@@ -861,13 +861,6 @@ namespace Repository.Generic
 
         #region Validation and Safety
         /// <summary>
-        /// Validates the specified entity.
-        /// </summary>
-        /// <param name="entity">The entity to validate.</param>
-        /// <returns>A Result containing the validation result.</returns>
-        Result<ValidationResult> Validate(TEntity entity);
-
-        /// <summary>
         /// Performs a soft delete on the specified entity.
         /// </summary>
         /// <param name="entity">The entity to soft delete.</param>
