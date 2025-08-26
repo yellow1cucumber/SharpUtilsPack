@@ -823,6 +823,43 @@ namespace SharpUtils.Repository.Generic
             }
         }
 
+        public async Task<PaginatedResult<TEntity>> GetPagedOrderedAsync(
+            Expression<Func<TEntity, TKey>> orderBy,
+            int pageNumber,
+            int pageSize,
+            bool ascending = true,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (orderBy == null)
+                    throw new ArgumentNullException(nameof(orderBy));
+
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                var query = ascending ? this.DbSet.OrderBy(orderBy) : this.DbSet.OrderByDescending(orderBy);
+                var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged ordered entities: {ex.Message}");
+            }
+        }
+
         public async Task<PaginatedResult<TEntity>> GetPagedWhereWithIncludeAsync(
             Expression<Func<TEntity, bool>> predicate,
             int pageNumber,
