@@ -620,6 +620,320 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Read Operations
+
+        public async Task<Result<TEntity?>> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException(nameof(id));
+
+                var entity = await this.DbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
+                return Result<TEntity?>.Success(entity);
+            }
+            catch (Exception ex)
+            {
+                return Result<TEntity?>.Failure($"Failed to get entity by ID: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<TEntity?>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var entity = await this.DbSet.FirstOrDefaultAsync(predicate, cancellationToken).ConfigureAwait(false);
+                return Result<TEntity?>.Success(entity);
+            }
+            catch (Exception ex)
+            {
+                return Result<TEntity?>.Failure($"Failed to get first entity: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var entities = await this.DbSet.ToListAsync(cancellationToken).ConfigureAwait(false);
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get all entities: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> GetWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var entities = await this.DbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get entities by predicate: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> GetWithIncludeAsync(
+            CancellationToken cancellationToken = default,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            try
+            {
+                IQueryable<TEntity> query = this.DbSet;
+
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+                var entities = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get entities with includes: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> GetWhereWithIncludeAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = default,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                IQueryable<TEntity> query = this.DbSet;
+
+                query = query.Where(predicate);
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+                var entities = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get entities with predicate and includes: {ex.Message}");
+            }
+        }
+
+        public async Task<PaginatedResult<TEntity>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                var totalItems = await this.DbSet.CountAsync(cancellationToken).ConfigureAwait(false);
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = await this.DbSet
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged entities: {ex.Message}");
+            }
+        }
+
+        public async Task<PaginatedResult<TEntity>> GetPagedWhereAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                var query = this.DbSet.Where(predicate);
+                var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged entities by predicate: {ex.Message}");
+            }
+        }
+
+        public async Task<PaginatedResult<TEntity>> GetPagedWhereWithIncludeAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellationToken = default,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                IQueryable<TEntity> query = this.DbSet;
+
+                query = query.Where(predicate);
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+                var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged entities by predicate with includes: {ex.Message}");
+            }
+        }
+
+        public async Task<PaginatedResult<TEntity>> GetPagedOrderedWithIncludeAsync(
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
+            int pageNumber,
+            int pageSize,
+            CancellationToken cancellationToken = default,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            try
+            {
+                if (orderBy == null)
+                    throw new ArgumentNullException(nameof(orderBy));
+
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                IQueryable<TEntity> query = this.DbSet;
+                query = orderBy(query);
+                query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+                var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = await query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged ordered entities with includes: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<int>> CountAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var count = await this.DbSet.CountAsync(cancellationToken).ConfigureAwait(false);
+                return Result<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"Failed to count entities: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<int>> CountWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var count = await this.DbSet.CountAsync(predicate, cancellationToken).ConfigureAwait(false);
+                return Result<int>.Success(count);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"Failed to count entities by predicate: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<bool>> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var exists = await this.DbSet.AnyAsync(predicate, cancellationToken).ConfigureAwait(false);
+                return Result<bool>.Success(exists);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure($"Failed to check existence of entities by predicate: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<bool>> ExistsByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException(nameof(id));
+
+                var entity = await this.DbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
+                return Result<bool>.Success(entity != null);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure($"Failed to check existence of entity by ID: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Helper Methods
