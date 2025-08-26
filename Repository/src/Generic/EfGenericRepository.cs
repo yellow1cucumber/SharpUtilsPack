@@ -3137,19 +3137,22 @@ namespace SharpUtils.Repository.Generic
             using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var result = await operation(this).ConfigureAwait(false);
                 if (result.IsFailure)
                 {
-                    await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                    await transaction.RollbackAsync().ConfigureAwait(false);
                     return Result<TResult>.Failure(result.ErrorMessage ?? "Transaction operation failed.");
                 }
-                await this.Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+
+                await this.Context.SaveChangesAsync().ConfigureAwait(false);
+                await transaction.CommitAsync().ConfigureAwait(false);
                 return Result<TResult>.Success(result.Value!);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                await transaction.RollbackAsync().ConfigureAwait(false);
                 return Result<TResult>.Failure($"Transaction failed: {ex.Message}");
             }
         }
@@ -3277,8 +3280,8 @@ namespace SharpUtils.Repository.Generic
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     yield return Result<TEntity>.Success(item);
+                }
             }
-        }
         }
 
         /// <summary>
