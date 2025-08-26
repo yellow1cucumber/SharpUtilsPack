@@ -68,8 +68,8 @@ public class IntegrationTests : IDisposable
 
         // Verify deletion
         var getAfterDeleteResult = await this.repository.GetByIdAsync(entity.Id);
-        getAfterDeleteResult.IsSuccess.Should().BeTrue();
-        getAfterDeleteResult.Value.Should().BeNull();
+        getAfterDeleteResult.IsSuccess.Should().BeFalse();
+        getAfterDeleteResult.ErrorMessage.Should().Contain("not found");
     }
 
     [Fact]
