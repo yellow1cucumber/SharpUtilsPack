@@ -3259,18 +3259,26 @@ namespace SharpUtils.Repository.Generic
 
                 await foreach (var entity in query.WithCancellation(cancellationToken))
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     batch.Add(entity);
                     if (batch.Count == batchSize)
                     {
                         foreach (var item in batch)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
                             yield return Result<TEntity>.Success(item);
+                        }
                         batch.Clear();
                     }
                 }
 
                 foreach (var item in batch)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
                     yield return Result<TEntity>.Success(item);
             }
+        }
         }
 
         /// <summary>
