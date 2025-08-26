@@ -1216,15 +1216,41 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
-        #endregion
+        #region Transactions
 
-        #region Helper Methods
-
-        protected virtual void OnEntityChanged(TEntity entity, EntityChangeType changeType)
+        public async Task<Result<TResult>> TransactionAsync<TResult>(
+            Func<IGenericRepository<TEntity, TKey>, 
+            Task<Result<TResult>>> operation, 
+            CancellationToken cancellationToken = default)
         {
-            this.EntityChanged?.Invoke(this, new EntityChangedEventArgs<TEntity>(entity, changeType));
+            if (operation == null)
+                throw new ArgumentNullException(nameof(operation));
+
+            using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                var result = await operation(this).ConfigureAwait(false);
+                if (result.IsFailure)
+                {
+                    await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                    return Result<TResult>.Failure(result.ErrorMessage ?? "Transaction operation failed.");
+                }
+                await this.Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return Result<TResult>.Success(result.Value!);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
+                return Result<TResult>.Failure($"Transaction failed: {ex.Message}");
+            }
         }
 
+        #endregion
+
+        #endregion
+
+        #region Validation and Safety
         public Result RollbackChanges()
         {
             try
@@ -1250,6 +1276,14 @@ namespace SharpUtils.Repository.Generic
             {
                 return Result.Failure($"Failed to rollback changes: {ex.Message}");
             }
+        }
+        #endregion
+
+        #region Helper Methods
+
+        protected virtual void OnEntityChanged(TEntity entity, EntityChangeType changeType)
+        {
+            this.EntityChanged?.Invoke(this, new EntityChangedEventArgs<TEntity>(entity, changeType));
         }
 
         #endregion
