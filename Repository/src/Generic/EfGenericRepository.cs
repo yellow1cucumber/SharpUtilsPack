@@ -832,9 +832,10 @@ namespace SharpUtils.Repository.Generic
         }
 
         public async Task<PaginatedResult<TEntity>> GetPagedOrderedWithIncludeAsync(
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
+            Expression<Func<TEntity, TKey>> orderBy,
             int pageNumber,
             int pageSize,
+            bool ascending = true,
             CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes)
         {
@@ -850,7 +851,8 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
 
                 IQueryable<TEntity> query = this.DbSet;
-                query = orderBy(query);
+
+                query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
 
                 var totalItems = await query.CountAsync(cancellationToken).ConfigureAwait(false);
