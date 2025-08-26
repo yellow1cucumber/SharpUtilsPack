@@ -10,7 +10,7 @@ namespace SharpUtils.Repository.Generic
     /// </summary>
     /// <typeparam name="TEntity">The type of entity that this repository manages. Must be a reference type.</typeparam>
     /// <typeparam name="TKey">The type of the entity's primary key.</typeparam>
-    public interface IGenericRepository<TEntity, TKey> 
+    public interface IGenericRepository<TEntity, TKey> : IDisposable
         where TEntity : class
         where TKey : IEquatable<TKey>
     {
