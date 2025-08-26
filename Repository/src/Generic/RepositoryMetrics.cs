@@ -1,30 +1,5 @@
 namespace SharpUtils.Repository.Generic
 {
-    /// <summary>
-    /// Provides metadata about repository operations and their performance.
-    /// </summary>
-    public class RepositoryMetrics
-    {
-        /// <summary>
-        /// Gets or sets the total number of queries executed.
-        /// </summary>
-        public int QueryCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total execution time of all queries.
-        /// </summary>
-        public TimeSpan TotalQueryTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of cache hits.
-        /// </summary>
-        public int CacheHits { get; set; }
-
-        /// <summary>
-        /// Gets or sets the number of cache misses.
-        /// </summary>
-        public int CacheMisses { get; set; }
-    }
 
     /// <summary>
     /// Represents the details of a change to an entity.
