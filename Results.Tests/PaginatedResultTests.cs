@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Results;
+using SharpUtils.Results;
 using Xunit;
 
-namespace Results.Tests
+namespace SharpUtils.Results.Tests
 {
     /// <summary>
     /// Contains unit tests for the <see cref="PaginatedResult{T}"/> class.
