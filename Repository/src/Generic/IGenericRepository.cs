@@ -58,21 +58,21 @@ namespace SharpUtils.Repository.Generic
         /// </summary>
         /// <param name="id">The primary key value to search for.</param>
         /// <returns>
-        /// A <see cref="Result{TEntity}"/> containing the found entity or null if not found,
+        /// A <see cref="Result{TEntity}"/> containing the found entity,
         /// or an error message if the operation fails.
         /// </returns>
         /// <remarks>
         /// This method assumes the entity has a single primary key property.
         /// For composite keys, use <see cref="GetFirstOrDefault"/> with an appropriate predicate.
         /// </remarks>
-        Result<TEntity?> GetById(TKey id);
+        Result<TEntity> GetById(TKey id);
 
         /// <summary>
         /// Retrieves the first entity that matches the specified predicate, or null if no match is found.
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>
-        /// A <see cref="Result{TEntity}"/> containing the first matching entity or null if no match is found,
+        /// A <see cref="Result{TEntity}"/> containing the first matching entity
         /// or an error message if the operation fails.
         /// </returns>
         /// <example>
@@ -80,7 +80,7 @@ namespace SharpUtils.Repository.Generic
         /// var result = repository.GetFirstOrDefault(p => p.Name == "ProductName");
         /// </code>
         /// </example>
-        Result<TEntity?> GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate);
+        Result<TEntity> GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate);
 
         #endregion
 
@@ -503,20 +503,20 @@ namespace SharpUtils.Repository.Generic
         /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains a <see cref="Result{TEntity}"/>
-        /// with the found entity or null if not found, or an error message if the operation fails.
+        /// with the found entity if successful, or an error message if the operation fails.
         /// </returns>
-        Task<Result<TEntity?>> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
+        Task<Result<TEntity>> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Asynchronously retrieves the first entity that matches the specified predicate, or null if no match is found.
+        /// Asynchronously retrieves the first entity that matches the specified predicate.
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains a <see cref="Result{TEntity}"/>
-        /// with the first matching entity or null if no match is found, or an error message if the operation fails.
+        /// with the first matching entity if successful, or an error message if the operation fails.
         /// </returns>
-        Task<Result<TEntity?>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+        Task<Result<TEntity>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
         #endregion
 

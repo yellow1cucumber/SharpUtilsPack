@@ -243,12 +243,12 @@ namespace SharpUtils.Repository.Generic
         /// <summary>
         /// Retrieves an entity by its primary key value.
         /// </summary>
-        /// <param name="id">The primary key value of the entity to retrieve.</param>
+        /// <param name="id">The primary key value of the entity to retrieve. Cannot be null.</param>
         /// <returns>
         /// A <see cref="Result{TEntity}"/> that represents the outcome of the operation:
         /// <list type="bullet">
-        /// <item><description>Success: Contains the found entity or null if no entity was found</description></item>
-        /// <item><description>Failure: Contains an error message describing what went wrong</description></item>
+        /// <item><description>Success: Contains the found entity.</description></item>
+        /// <item><description>Failure: Contains an error message if the entity is not found or an exception occurs.</description></item>
         /// </list>
         /// </returns>
         /// <remarks>
@@ -272,7 +272,7 @@ namespace SharpUtils.Repository.Generic
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is null.</exception>
-        public Result<TEntity?> GetById(TKey id)
+        public Result<TEntity> GetById(TKey id)
         {
             try
             {
@@ -280,43 +280,47 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentNullException(nameof(id));
 
                 var entity = this.DbSet.Find(id);
-                return Result<TEntity?>.Success(entity);
+
+                return entity == null
+                    ? Result<TEntity>.Failure("Entity not found.")
+                    : Result<TEntity>.Success(entity);
             }
             catch (Exception ex)
             {
-                return Result<TEntity?>.Failure($"Failed to get entity by ID: {ex.Message}");
+                return Result<TEntity>.Failure($"Failed to get entity by ID: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Retrieves the first entity matching the specified condition, or null if no match is found.
+        /// Retrieves the first entity matching the specified condition.
         /// </summary>
-        /// <param name="predicate">A function defining the condition to match.</param>
+        /// <param name="predicate">A function defining the condition to match. Cannot be null.</param>
         /// <returns>
         /// A <see cref="Result{TEntity}"/> that represents the outcome of the operation:
         /// <list type="bullet">
-        /// <item><description>Success: Contains the first matching entity or null if no match</description></item>
-        /// <item><description>Failure: Contains an error message describing what went wrong</description></item>
+        /// <item><description>Success: Contains the first matching entity.</description></item>
+        /// <item><description>Failure: Contains an error message if no match is found or an exception occurs.</description></item>
         /// </list>
         /// </returns>
         /// <remarks>
         /// <para>
-        /// This method executes immediately and returns at most one entity. For queries that might
-        /// return multiple entities, use <see cref="GetWhere"/> instead.
+        /// This method executes immediately and returns the first entity that matches the condition.
+        /// If no entity matches, the result will indicate failure with an appropriate error message.
         /// </para>
         /// <para>
         /// Example usage:
         /// <code>
-        /// var result = repository.GetFirstOrDefault(e => e.Status == "Active" &amp;&amp; e.Price > 100);
-        /// if (result.IsSuccess &amp;&amp; result.Value != null)
+        /// var result = repository.GetFirstOrDefault(e => e.Status == "Active" && e.Price > 100);
+        /// if (result.IsSuccess)
         /// {
+        ///     var entity = result.Value;
         ///     // Process the found entity...
         /// }
         /// </code>
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is null.</exception>
-        public Result<TEntity?> GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate)
+        public Result<TEntity> GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate)
         {
             try
             {
@@ -324,11 +328,14 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentNullException(nameof(predicate));
 
                 var entity = this.DbSet.FirstOrDefault(predicate);
-                return Result<TEntity?>.Success(entity);
+                
+                return entity == null 
+                    ? Result<TEntity>.Failure("No matching entity found.")
+                    : Result<TEntity>.Success(entity);
             }
             catch (Exception ex)
             {
-                return Result<TEntity?>.Failure($"Failed to get first entity: {ex.Message}");
+                return Result<TEntity>.Failure($"Failed to get first entity: {ex.Message}");
             }
         }
 
@@ -1680,20 +1687,21 @@ namespace SharpUtils.Repository.Generic
         }
 
         /// <summary>
-        /// Asynchronously retrieves an entity by its primary key value.
+        /// Asynchronously retrieves an entity by its primary key.
         /// </summary>
-        /// <param name="id">The primary key value of the entity to retrieve.</param>
+        /// <param name="id">The primary key value of the entity to retrieve. Cannot be null.</param>
         /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
         /// <returns>
-        /// A task representing the asynchronous operation, containing a <see cref="Result{TEntity}"/> that:
+        /// A task representing the asynchronous operation, containing a <see cref="Result{TEntity}"/>:
         /// <list type="bullet">
-        /// <item><description>On success: Contains the found entity or null if no entity was found</description></item>
-        /// <item><description>On failure: Contains an error message describing what went wrong</description></item>
+        /// <item><description>On success: Contains the found entity.</description></item>
+        /// <item><description>On failure: Contains an error message if the entity is not found or an exception occurs.</description></item>
         /// </list>
         /// </returns>
         /// <remarks>
         /// <para>
-        /// This is the async version of <see cref="GetById"/>. It uses the primary key index for efficient lookups.
+        /// This method performs an efficient lookup using the primary key index. For queries using other fields,
+        /// use <see cref="GetFirstOrDefaultAsync"/> or <see cref="GetWhereAsync"/> instead.
         /// </para>
         /// <para>
         /// Example usage:
@@ -1711,7 +1719,7 @@ namespace SharpUtils.Repository.Generic
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is null.</exception>
-        public async Task<Result<TEntity?>> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        public async Task<Result<TEntity>> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1719,43 +1727,48 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentNullException(nameof(id));
 
                 var entity = await this.DbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
-                return Result<TEntity?>.Success(entity);
+
+                return entity == null 
+                    ? Result<TEntity>.Failure("Entity not found.")
+                    : Result<TEntity>.Success(entity);
             }
             catch (Exception ex)
             {
-                return Result<TEntity?>.Failure($"Failed to get entity by ID: {ex.Message}");
+                return Result<TEntity>.Failure($"Failed to get entity by ID: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// Asynchronously retrieves the first entity matching the specified condition, or null if no match is found.
+        /// Asynchronously retrieves the first entity that matches the specified predicate, or null if no match is found.
         /// </summary>
-        /// <param name="predicate">A function defining the condition to match.</param>
+        /// <param name="predicate">A function to test each entity for a condition. Cannot be null.</param>
         /// <param name="cancellationToken">A token to observe while waiting for the task to complete.</param>
         /// <returns>
-        /// A task representing the asynchronous operation, containing a <see cref="Result{TEntity}"/> that:
+        /// A task representing the asynchronous operation, containing a <see cref="Result{TEntity}"/>:
         /// <list type="bullet">
-        /// <item><description>On success: Contains the first matching entity or null if no match</description></item>
-        /// <item><description>On failure: Contains an error message describing what went wrong</description></item>
+        /// <item><description>On success: Contains the first matching entity.</description></item>
+        /// <item><description>On failure: Contains an error message if no match is found or an exception occurs.</description></item>
         /// </list>
         /// </returns>
         /// <remarks>
         /// <para>
-        /// This is the async version of <see cref="GetFirstOrDefault"/>. It executes immediately and returns at most one entity.
+        /// This method executes the query asynchronously and returns the first entity that matches the condition.
+        /// If no entity matches, the result will indicate failure with an appropriate error message.
         /// </para>
         /// <para>
         /// Example usage:
         /// <code>
-        /// var result = await repository.GetFirstOrDefaultAsync(e => e.Status == "Active" &amp;&amp; e.Price > 100);
-        /// if (result.IsSuccess &amp;&amp; result.Value != null)
+        /// var result = await repository.GetFirstOrDefaultAsync(e => e.Status == "Active" && e.Price > 100);
+        /// if (result.IsSuccess)
         /// {
+        ///     var entity = result.Value;
         ///     // Process the found entity...
         /// }
         /// </code>
         /// </para>
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is null.</exception>
-        public async Task<Result<TEntity?>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        public async Task<Result<TEntity>> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1763,11 +1776,14 @@ namespace SharpUtils.Repository.Generic
                     throw new ArgumentNullException(nameof(predicate));
 
                 var entity = await this.DbSet.FirstOrDefaultAsync(predicate, cancellationToken).ConfigureAwait(false);
-                return Result<TEntity?>.Success(entity);
+
+                return entity == null
+                    ? Result<TEntity>.Failure("Entity not found.")
+                    : Result<TEntity>.Success(entity);
             }
             catch (Exception ex)
             {
-                return Result<TEntity?>.Failure($"Failed to get first entity: {ex.Message}");
+                return Result<TEntity>.Failure($"Failed to get first entity: {ex.Message}");
             }
         }
 
