@@ -227,6 +227,38 @@ namespace SharpUtils.Repository.Generic
             }
         }
 
+        public PaginatedResult<TEntity> GetPagedOrdered(
+            Expression<Func<TEntity, TKey>> orderBy,
+            int pageNumber,
+            int pageSize,
+            bool ascending = true)
+        {
+            try
+            {
+                if (orderBy == null)
+                    throw new ArgumentNullException(nameof(orderBy));
+
+                if (pageNumber <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageNumber), "Page number must be greater than zero.");
+
+                if (pageSize <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than zero.");
+
+                var query = ascending ? this.DbSet.OrderBy(orderBy) : this.DbSet.OrderByDescending(orderBy);
+                var totalItems = query.Count();
+                var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+                var items = query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+                return totalItems.CompareTo(0) == 0
+                    ? PaginatedResult<TEntity>.Success(new List<TEntity>(), (uint)pageNumber, (uint)pageSize, (uint)totalItems)
+                    : PaginatedResult<TEntity>.Empty((uint)pageNumber, (uint)pageSize);
+            }
+            catch (Exception ex)
+            {
+                return PaginatedResult<TEntity>.Failure($"Failed to get paged ordered entities: {ex.Message}");
+            }
+        }
+
         public PaginatedResult<TEntity> GetPagedWhereWithInclude(
             Expression<Func<TEntity, bool>> predicate,
             int pageNumber,
@@ -264,9 +296,10 @@ namespace SharpUtils.Repository.Generic
         }
 
         public PaginatedResult<TEntity> GetPagedOrderedWithInclude(
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
+            Expression<Func<TEntity, TKey>> orderBy,
             int pageNumber,
             int pageSize,
+            bool ascending = true,
             params Expression<Func<TEntity, object>>[] includes)
         {
             try
@@ -282,7 +315,7 @@ namespace SharpUtils.Repository.Generic
 
                 IQueryable<TEntity> query = this.DbSet;
 
-                query = orderBy(query);
+                query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
                 query = includes.Aggregate(query, (current, include) => current.Include(include));
                 
                 var totalItems = query.Count();
@@ -1124,6 +1157,23 @@ namespace SharpUtils.Repository.Generic
             catch (Exception ex)
             {
                 return Result<int>.Failure($"Failed to bulk delete entities: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Persistance
+
+        public async Task<Result<int>> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var result = await this.Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return Result<int>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"Failed to save changes: {ex.Message}");
             }
         }
 
