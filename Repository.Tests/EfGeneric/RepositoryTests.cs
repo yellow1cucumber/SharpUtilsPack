@@ -231,15 +231,14 @@ public class RepositoryTests : IDisposable
     }
 
     [Fact]
-    public void GetById_WithNonExistingId_ShouldReturnNull()
+    public void GetById_WithNonExistingId_ShouldReturnResultFailed()
     {
         // Act
         var result = this.repository.GetById(999);
 
         // Assert
-        result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("not found");
     }
 
     [Fact]
