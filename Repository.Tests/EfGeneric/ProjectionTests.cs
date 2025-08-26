@@ -79,8 +79,8 @@ public class ProjectionTests : IDisposable
 
         // Assert
         result.Should().NotBeNull();
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("No entity matches");
     }
 
     [Fact]
@@ -113,8 +113,7 @@ public class ProjectionTests : IDisposable
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await this.repository.GetProjectionAsync(
-                projection: e => e.Name,
-                predicate: null!));
+                projection: e => e.Name));
     }
 
     [Fact]

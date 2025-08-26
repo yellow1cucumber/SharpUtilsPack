@@ -3207,7 +3207,9 @@ namespace SharpUtils.Repository.Generic
                     .FirstOrDefaultAsync(cancellationToken)
                     .ConfigureAwait(false);
 
-                return Result<TProjection>.Success(projectedValue!);
+                return projectedValue is null 
+                    ? Result<TProjection>.Failure("No entity matches the given predicate.") 
+                    : Result<TProjection>.Success(projectedValue);
             }
             catch (Exception ex)
             {
