@@ -1462,7 +1462,7 @@ namespace SharpUtils.Repository.Generic
                 if (updateExpression == null)
                     throw new ArgumentNullException(nameof(updateExpression));
 
-                var entities = this.DbSet.Where(predicate);
+                var entities = this.DbSet.Where(predicate).ToList();
                 foreach (var entity in entities)
                 {
                     var updatedEntity = updateExpression.Compile().Invoke(entity);

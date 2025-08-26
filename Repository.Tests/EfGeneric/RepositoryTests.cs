@@ -802,7 +802,8 @@ public class RepositoryTests : IDisposable
         // Act
         var result = this.repository.BulkUpdate(
             e => e.IsActive,
-            e => new TestEntity { Name = "Bulk Updated" });
+            e => new TestEntity { Id = e.Id, Name = "Bulk Updated", IsActive = e.IsActive, CreatedAt = e.CreatedAt, Category = e.Category, Price = e.Price }
+        );
 
         // Assert
         result.Should().NotBeNull();
