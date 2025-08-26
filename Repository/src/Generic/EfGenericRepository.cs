@@ -1079,6 +1079,56 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Bulk Operations
+
+        public async Task<Result<int>> BulkUpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> updateExpression, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                if (updateExpression == null)
+                    throw new ArgumentNullException(nameof(updateExpression));
+
+                var entities = this.DbSet.Where(predicate);
+                foreach (var entity in entities)
+                {
+                    var updatedEntity = updateExpression.Compile().Invoke(entity);
+                    this.Context.Entry(entity).CurrentValues.SetValues(updatedEntity);
+                    this.OnEntityChanged(entity, EntityChangeType.Modified);
+                }
+                return Result<int>.Success(entities.Count());
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"Failed to bulk update entities: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<int>> BulkDeleteAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var entities = this.DbSet.Where(predicate);
+                this.DbSet.RemoveRange(entities);
+                foreach (var entity in entities)
+                {
+                    this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                }
+                return Result<int>.Success(entities.Count());
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"Failed to bulk delete entities: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Helper Methods
