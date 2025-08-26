@@ -1,6 +1,4 @@
-using System;
-
-namespace Repository.Generic
+namespace SharpUtils.Repository.Generic
 {
     /// <summary>
     /// Provides metadata about repository operations and their performance.

@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Results;
+using SharpUtils.Results;
 
-namespace Repository.Generic
+namespace SharpUtils.Repository.Generic
 {
     /// <summary>
     /// Defines a generic repository interface that provides comprehensive data access operations for entities.

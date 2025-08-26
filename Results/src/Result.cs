@@ -1,4 +1,4 @@
-﻿namespace Results
+﻿namespace SharpUtils.Results
 {
     /// <summary>
     /// Represents the result of an operation, encapsulating either a value or an error message.
