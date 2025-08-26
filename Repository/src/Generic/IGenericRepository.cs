@@ -870,7 +870,7 @@ namespace SharpUtils.Repository.Generic
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Result containing the operation result.</returns>
         Task<Result<TResult>> TransactionAsync<TResult>(
-            Func<IGenericRepository<TEntity, TKey>, CancellationToken, Task<Result<TResult>>> operation,
+            Func<IGenericRepository<TEntity, TKey>, Task<Result<TResult>>> operation,
             CancellationToken cancellationToken = default);
         #endregion
 
