@@ -1303,6 +1303,63 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Specification
+
+        public Result<IEnumerable<TEntity>> GetBySpecification(ISpecification<TEntity> specification)
+        {
+            try
+            {
+                if (specification == null)
+                    throw new ArgumentNullException(nameof(specification));
+
+                var query = this.DbSet.AsQueryable();
+                if (specification.Criteria != null)
+                {
+                    query = query.Where(specification.Criteria);
+                }
+                if (specification.Includes != null)
+                {
+                    query = specification.Includes.Aggregate(query, (current, include) => current.Include(include));
+                }
+
+                var entities = query.ToList();
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get entities by specification: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> GetBySpecificationAsync(
+            ISpecification<TEntity> specification, 
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (specification == null)
+                    throw new ArgumentNullException(nameof(specification));
+
+                var query = this.DbSet.AsQueryable();
+                if (specification.Criteria != null)
+                {
+                    query = query.Where(specification.Criteria);
+                }
+                if (specification.Includes != null)
+                {
+                    query = specification.Includes.Aggregate(query, (current, include) => current.Include(include));
+                }
+                var entities = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
+                return Result<IEnumerable<TEntity>>.Success(entities);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to get entities by specification: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Validation and Safety
