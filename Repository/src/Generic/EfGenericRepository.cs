@@ -461,6 +461,51 @@ namespace SharpUtils.Repository.Generic
             }
         }
 
+        public Result DeleteById(TKey id)
+        {
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException(nameof(id));
+
+                var entity = this.DbSet.Find(id);
+                if (entity == null)
+                {
+                    return Result.Failure("Entity not found.");
+                }
+
+                this.DbSet.Remove(entity);
+                this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entity by ID: {ex.Message}");
+            }
+        }
+
+        public Result DeleteWhere(Expression<Func<TEntity, bool>> predicate)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var entities = this.DbSet.Where(predicate).ToList();
+                this.DbSet.RemoveRange(entities);
+
+                foreach (var entity in entities)
+                {
+                    this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                }
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entities by predicate: {ex.Message}");
+            }
+        }
+
         #endregion
 
         #region Bulk Operations
