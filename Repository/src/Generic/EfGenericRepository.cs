@@ -1279,25 +1279,31 @@ namespace SharpUtils.Repository.Generic
             }
         }
 
-        public async IAsyncEnumerable<Result<TResult>> StreamAsync<TResult>(int batchSize = 1000, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Result<TEntity>> GetAllAsStreamAsync(int batchSize = 1000, CancellationToken cancellationToken = default)
         {
             if (batchSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be greater than zero.");
 
-            var totalCount = await this.DbSet.CountAsync(cancellationToken).ConfigureAwait(false);
+            return StreamEntitiesAsync(batchSize, cancellationToken);
 
-            for (var i = 0; i < totalCount; i += batchSize)
+            async IAsyncEnumerable<Result<TEntity>> StreamEntitiesAsync(int batchSize, [EnumeratorCancellation] CancellationToken cancellationToken)
             {
-                var batch = await this.DbSet
-                    .Skip(i)
-                    .Take(batchSize)
-                    .ToListAsync(cancellationToken)
-                    .ConfigureAwait(false);
+                var query = this.DbSet.AsNoTracking().AsAsyncEnumerable();
+                var batch = new List<TEntity>(batchSize);
+
+                await foreach (var entity in query.WithCancellation(cancellationToken))
+                {
+                    batch.Add(entity);
+                    if (batch.Count == batchSize)
+                    {
+                        foreach (var item in batch)
+                            yield return Result<TEntity>.Success(item);
+                        batch.Clear();
+                    }
+                }
 
                 foreach (var item in batch)
-                {
-                    yield return Result<TResult>.Success((TResult)(object)item!);
-                }
+                    yield return Result<TEntity>.Success(item);
             }
         }
 
@@ -1397,8 +1403,6 @@ namespace SharpUtils.Repository.Generic
         }
 
         #endregion
-
-
 
         #endregion
 
