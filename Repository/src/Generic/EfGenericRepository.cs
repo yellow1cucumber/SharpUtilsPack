@@ -574,6 +574,54 @@ namespace SharpUtils.Repository.Generic
         #endregion
         #endregion
 
+        #region ASYNC
+
+        #region Create Operations
+
+        public async Task<Result<TEntity>> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entity == null)
+                    throw new ArgumentNullException(nameof(entity));
+
+                var entry = await this.DbSet.AddAsync(entity, cancellationToken).ConfigureAwait(false);
+                this.OnEntityChanged(entity, EntityChangeType.Added);
+
+                return Result<TEntity>.Success(entry.Entity);
+            }
+            catch (Exception ex)
+            {
+                return Result<TEntity>.Failure($"Failed to add entity: {ex.Message}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<TEntity>>> AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entities == null)
+                    throw new ArgumentNullException(nameof(entities));
+
+                var entityList = entities.ToList();
+                await this.DbSet.AddRangeAsync(entityList, cancellationToken).ConfigureAwait(false);
+
+                foreach (var entity in entityList)
+                {
+                    this.OnEntityChanged(entity, EntityChangeType.Added);
+                }
+                return Result<IEnumerable<TEntity>>.Success(entityList);
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<TEntity>>.Failure($"Failed to add entities: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #endregion
+
         #region Helper Methods
 
         protected virtual void OnEntityChanged(TEntity entity, EntityChangeType changeType)
