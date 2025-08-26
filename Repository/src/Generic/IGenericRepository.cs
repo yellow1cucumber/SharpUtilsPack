@@ -885,7 +885,7 @@ namespace SharpUtils.Repository.Generic
         /// <returns>A Result containing the projected entities.</returns>
         Task<Result<TProjection>> GetProjectionAsync<TProjection>(
             Expression<Func<TEntity, TProjection>> projection,
-            Expression<Func<TEntity, bool>>? predicate = null,
+            Expression<Func<TEntity, bool>> predicate,
             CancellationToken cancellationToken = default);
 
         /// <summary>

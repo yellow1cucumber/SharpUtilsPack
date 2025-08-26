@@ -3190,7 +3190,7 @@ namespace SharpUtils.Repository.Generic
         /// </remarks>
         public async Task<Result<TProjection>> GetProjectionAsync<TProjection>(
             Expression<Func<TEntity, TProjection>> projection,
-            Expression<Func<TEntity, bool>>? predicate = null,
+            Expression<Func<TEntity, bool>> predicate,
             CancellationToken cancellationToken = default)
         {
             try
