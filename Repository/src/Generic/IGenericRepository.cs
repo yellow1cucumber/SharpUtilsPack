@@ -933,52 +933,6 @@ namespace SharpUtils.Repository.Generic
             TProperty value);
         #endregion
 
-        #region Advanced Pagination
-        /// <summary>
-        /// Retrieves a page of entities using cursor-based pagination.
-        /// </summary>
-        /// <param name="cursor">The cursor value.</param>
-        /// <param name="pageSize">The size of the page.</param>
-        /// <param name="orderBy">The ordering expression.</param>
-        /// <param name="ascending">Whether to order in ascending order.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A PaginatedResult containing the page of entities.</returns>
-        Task<PaginatedResult<TEntity>> GetPagedByCursorAsync(
-            string cursor,
-            int pageSize,
-            Expression<Func<TEntity, object>> orderBy,
-            bool ascending = true,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Retrieves a cached page of entities.
-        /// </summary>
-        /// <param name="pageNumber">The page number.</param>
-        /// <param name="pageSize">The page size.</param>
-        /// <param name="cacheExpiration">How long to cache the results.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A PaginatedResult containing the page of entities.</returns>
-        Task<PaginatedResult<TEntity>> GetPagedCachedAsync(
-            int pageNumber,
-            int pageSize,
-            TimeSpan cacheExpiration,
-            CancellationToken cancellationToken = default);
-        #endregion
-
-        #region Performance Monitoring
-        /// <summary>
-        /// Retrieves metrics about repository operations.
-        /// </summary>
-        /// <param name="start">The start of the period.</param>
-        /// <param name="end">The end of the period.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A Result containing the repository metrics.</returns>
-        Task<Result<RepositoryMetrics>> GetMetricsAsync(
-            DateTime start,
-            DateTime end,
-            CancellationToken cancellationToken = default);
-        #endregion
-
         #endregion
     }
 }
