@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+
 using Microsoft.EntityFrameworkCore;
 using SharpUtils.Results;
 
@@ -1243,6 +1245,59 @@ namespace SharpUtils.Repository.Generic
             {
                 await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
                 return Result<TResult>.Failure($"Transaction failed: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Projections and Streaming
+
+        public async Task<Result<TProjection>> GetProjectionAsync<TProjection>(
+            Expression<Func<TEntity, TProjection>> projection,
+            Expression<Func<TEntity, bool>>? predicate = null,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                if (projection == null)
+                    throw new ArgumentNullException(nameof(projection));
+
+                var projectedValue = await this.DbSet
+                    .Where(predicate)
+                    .Select(projection)
+                    .FirstOrDefaultAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                return Result<TProjection>.Success(projectedValue!);
+            }
+            catch (Exception ex)
+            {
+                return Result<TProjection>.Failure($"Failed to get projection: {ex.Message}");
+            }
+        }
+
+        public async IAsyncEnumerable<Result<TResult>> StreamAsync<TResult>(int batchSize = 1000, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            if (batchSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(batchSize), "Batch size must be greater than zero.");
+
+            var totalCount = await this.DbSet.CountAsync(cancellationToken).ConfigureAwait(false);
+
+            for (var i = 0; i < totalCount; i += batchSize)
+            {
+                var batch = await this.DbSet
+                    .Skip(i)
+                    .Take(batchSize)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+
+                foreach (var item in batch)
+                {
+                    yield return Result<TResult>.Success((TResult)(object)item!);
+                }
             }
         }
 
