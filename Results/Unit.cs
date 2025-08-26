@@ -1,4 +1,4 @@
-﻿namespace Results
+﻿namespace SharpUtils.Results
 {
     public readonly struct Unit
     {

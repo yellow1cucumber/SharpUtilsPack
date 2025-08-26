@@ -1,4 +1,4 @@
-﻿namespace Results
+﻿namespace SharpUtils.Results
 {
     /// <summary>
     /// Represents a paginated result of an operation, encapsulating a collection of items along with pagination metadata.
