@@ -1360,6 +1360,46 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Partial Updates
+
+        public Result<TEntity> UpdatePartial<TProperty>(TEntity entity, Expression<Func<TEntity, TProperty>> propertyExpression, TProperty value)
+        {
+            try
+            {
+                if (entity == null)
+                    throw new ArgumentNullException(nameof(entity));
+
+                if (propertyExpression == null)
+                    throw new ArgumentNullException(nameof(propertyExpression));
+
+                var entry = this.Context.Entry(entity);
+                if (entry.State == EntityState.Detached)
+                {
+                    this.DbSet.Attach(entity);
+                }
+
+                var memberExpression = propertyExpression.Body as MemberExpression;
+                if (memberExpression == null)
+                    throw new ArgumentException("The property expression must be a member expression.", nameof(propertyExpression));
+
+                var propertyName = memberExpression.Member.Name;
+                entry.Property(propertyName).CurrentValue = value;
+                entry.Property(propertyName).IsModified = true;
+
+                this.OnEntityChanged(entity, EntityChangeType.Modified);
+
+                return Result<TEntity>.Success(entity);
+            }
+            catch (Exception ex)
+            {
+                return Result<TEntity>.Failure($"Failed to partially update entity: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+
+
         #endregion
 
         #region Validation and Safety
