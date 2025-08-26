@@ -53,7 +53,7 @@ public class ProjectionTests : IDisposable
 
         // Act
         var result = await this.repository.GetProjectionAsync(
-            projection: e => new TestEntityDto { Id = e.Id, Name = e.Name, Category = e.Category },
+            projection: e => new TestEntityDto { Id = e.Id, Name = e.Name, Category = e.Category }, 
             predicate: e => e.IsActive);
 
         // Assert
@@ -74,7 +74,7 @@ public class ProjectionTests : IDisposable
 
         // Act
         var result = await this.repository.GetProjectionAsync(
-            projection: e => new TestEntityDto { Id = e.Id, Name = e.Name },
+            projection: e => new TestEntityDto { Id = e.Id, Name = e.Name }, 
             predicate: e => e.IsActive);
 
         // Assert
@@ -98,7 +98,7 @@ public class ProjectionTests : IDisposable
 
         // Act
         var result = await this.repository.GetProjectionAsync(
-            projection: e => e.Price,
+            projection: e => e.Price, 
             predicate: e => e.Name == "Entity 2");
 
         // Assert
@@ -111,19 +111,24 @@ public class ProjectionTests : IDisposable
     public async Task GetProjectionAsync_WithNullPredicate_ShouldThrowArgumentNullException()
     {
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await this.repository.GetProjectionAsync(
-                projection: e => e.Name));
+        var result = await this.repository.GetProjectionAsync(
+            projection: e => e.Name, predicate: null!);
+
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("predicate").And.Contain("cannot be null");
     }
 
     [Fact]
     public async Task GetProjectionAsync_WithNullProjection_ShouldThrowArgumentNullException()
     {
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            await this.repository.GetProjectionAsync<string>(
-                projection: null!,
-                predicate: e => e.IsActive));
+        var result = await this.repository.GetProjectionAsync<string>(
+            projection: null!, predicate: e => e.IsActive);
+
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.ErrorMessage.Should().Contain("projection").And.Contain("cannot be null");
     }
 
     private static TestEntity CreateTestEntity(string name, bool isActive = true, decimal price = 10.00m)
