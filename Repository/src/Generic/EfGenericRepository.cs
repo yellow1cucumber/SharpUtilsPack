@@ -989,6 +989,96 @@ namespace SharpUtils.Repository.Generic
 
         #endregion
 
+        #region Delete Operations
+
+        public async Task<Result> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entity == null)
+                    throw new ArgumentNullException(nameof(entity));
+
+                if (this.Context.Entry(entity).State == EntityState.Detached)
+                {
+                    this.DbSet.Attach(entity);
+                }
+
+                this.DbSet.Remove(entity);
+                this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entity: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (entities == null)
+                    throw new ArgumentNullException(nameof(entities));
+
+                var entityList = entities.ToList();
+                this.DbSet.RemoveRange(entityList);
+                foreach (var entity in entityList)
+                {
+                    this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                }
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entities: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> DeleteByIdAsync(TKey id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (id == null)
+                    throw new ArgumentNullException(nameof(id));
+
+                var entity = await this.DbSet.FindAsync(new object[] { id }, cancellationToken).ConfigureAwait(false);
+                if (entity == null)
+                {
+                    return Result.Failure("Entity not found.");
+                }
+                this.DbSet.Remove(entity);
+                this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entity by ID: {ex.Message}");
+            }
+        }
+
+        public async Task<Result> DeleteWhereAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (predicate == null)
+                    throw new ArgumentNullException(nameof(predicate));
+
+                var entities = await this.DbSet.Where(predicate).ToListAsync(cancellationToken).ConfigureAwait(false);
+                this.DbSet.RemoveRange(entities);
+                foreach (var entity in entities)
+                {
+                    this.OnEntityChanged(entity, EntityChangeType.Deleted);
+                }
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete entities by predicate: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Helper Methods
