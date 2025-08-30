@@ -115,8 +115,6 @@
         }
         #endregion
 
-        #region UTILS
-
         #region MATCH
         /// <summary>
         /// Matches the result and executes the corresponding function based on success or failure.
@@ -232,7 +230,6 @@
         /// </remarks>
         public T ValueOrDefault(T defaultValue = default!) =>
             IsSuccess ? Value! : defaultValue;
-        #endregion
 
         #region OPERATORS
         /// <summary>
