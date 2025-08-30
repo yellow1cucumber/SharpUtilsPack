@@ -1,4 +1,4 @@
-﻿namespace SharpUtils.Results
+﻿namespace YellowCucumber.Results
 {
     public readonly struct Unit
     {

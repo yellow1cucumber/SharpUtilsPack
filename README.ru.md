@@ -4,7 +4,7 @@
 
 *[English version](README.md)*
 
-[![NuGet](https://img.shields.io/nuget/v/SharpUtils.Results.svg)](https://www.nuget.org/packages/SharpUtils.Results/)
+[![NuGet](https://img.shields.io/nuget/v/YellowCucumber.Results.svg)](https://www.nuget.org/packages/YellowCucumber.Results/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ќбзор
@@ -16,13 +16,13 @@ Results Ч это легковесна€ библиотека, реализующа€ паттерн Result (также известны
 ”становите пакет из NuGet:
 
 ```
-dotnet add package SharpUtils.Results
+dotnet add package YellowCucumber.Results
 ```
 
 »ли через менеджер пакетов NuGet:
 
 ```
-Install-Package SharpUtils.Results
+Install-Package YellowCucumber.Results
 ```
 
 ## ќсновные компоненты

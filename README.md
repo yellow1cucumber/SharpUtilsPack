@@ -4,7 +4,7 @@ A comprehensive functional results library for .NET 9 and C# 13, providing robus
 
 *[Russian version (Русская версия)](README.ru.md)*
 
-[![NuGet](https://img.shields.io/nuget/v/SharpUtils.Results.svg)](https://www.nuget.org/packages/SharpUtils.Results/)
+[![NuGet](https://img.shields.io/nuget/v/YellowCucumber.Results.svg)](https://www.nuget.org/packages/YellowCucumber.Results/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
@@ -16,13 +16,13 @@ Results is a lightweight library implementing the Result pattern (also known as 
 Install the package from NuGet:
 
 ```
-dotnet add package SharpUtils.Results
+dotnet add package YellowCucumber.Results
 ```
 
 Or via the NuGet Package Manager:
 
 ```
-Install-Package SharpUtils.Results
+Install-Package YellowCucumber.Results
 ```
 
 ## Key Components

@@ -8,7 +8,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<!-- Package Information -->
-		<PackageId>SharpUtils.Results</PackageId>
+		<PackageId>YellowCucumber.Results</PackageId>
 		<Version>1.0.2</Version>
 		<Authors>Yellow1Cucumber</Authors>
 		<Company>Yellow1Cucumber</Company>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>UtilsPack.Results</id>
+    <id>YellowCucumber.Results</id>
     <version>$version$</version>
-    <title>UtilsPack.Results</title>
+    <title>YellowCucumber.Results</title>
     <authors>$authors$</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>

@@ -1,6 +1,6 @@
-# Contributing to SharpUtils.Results
+# Contributing to YellowCucumber.Results
 
-First off, thank you for considering contributing to SharpUtils.Results! It's people like you that make this library better for everyone.
+First off, thank you for considering contributing to YellowCucumber.Results! It's people like you that make this library better for everyone.
 
 ## How Can I Contribute?
 
@@ -23,7 +23,7 @@ This section guides you through submitting an enhancement suggestion, including 
 - Provide a step-by-step description of the suggested enhancement in as many details as possible.
 - Provide specific examples to demonstrate the steps or point out the part of the library where the enhancement should be made.
 - Describe the current behavior and explain which behavior you expected to see instead and why.
-- Explain why this enhancement would be useful to most SharpUtils.Results users.
+- Explain why this enhancement would be useful to most YellowCucumber.Results users.
 
 ### Pull Requests
 

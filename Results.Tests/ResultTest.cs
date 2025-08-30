@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-namespace SharpUtils.Results.Tests
+namespace YellowCucumber.Results.Tests
 {
     /// <summary>
     /// Contains unit tests for the <see cref="Result{T}"/> and <see cref="Result"/> classes.
