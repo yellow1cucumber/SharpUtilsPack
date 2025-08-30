@@ -1,6 +1,6 @@
-# Contributing to SharpUtils.Results
+# Contributing to YellowCucumber.Results
 
-First off, thank you for considering contributing to SharpUtils.Results! It's people like you that make this library better for everyone.
+First off, thank you for considering contributing to YellowCucumber.Results! It's people like you that make this library better for everyone.
 
 ## How Can I Contribute?
 
@@ -23,7 +23,7 @@ This section guides you through submitting an enhancement suggestion, including 
 - Provide a step-by-step description of the suggested enhancement in as many details as possible.
 - Provide specific examples to demonstrate the steps or point out the part of the library where the enhancement should be made.
 - Describe the current behavior and explain which behavior you expected to see instead and why.
-- Explain why this enhancement would be useful to most SharpUtils.Results users.
+- Explain why this enhancement would be useful to most YellowCucumber.Results users.
 
 ### Pull Requests
 
@@ -52,9 +52,8 @@ Some key points:
 
 - Use PascalCase for class names, method names, and property names
 - Use camelCase for local variables and parameters
-- Prefix private fields with an underscore (_)
 - Use var when the type is obvious, otherwise be explicit
-- Add XML documentation for all public members
+- Add XML documentation for all members
 
 ## Code of Conduct
 

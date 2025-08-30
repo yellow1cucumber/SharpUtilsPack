@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SharpUtils.Results;
+using YellowCucumber.Results;
 using Xunit;
 
-namespace SharpUtils.Results.Tests
+namespace YellowCucumber.Results.Tests
 {
     /// <summary>
     /// Contains unit tests for the <see cref="PaginatedResult{T}"/> class.
