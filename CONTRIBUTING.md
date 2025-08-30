@@ -52,9 +52,8 @@ Some key points:
 
 - Use PascalCase for class names, method names, and property names
 - Use camelCase for local variables and parameters
-- Prefix private fields with an underscore (_)
 - Use var when the type is obvious, otherwise be explicit
-- Add XML documentation for all public members
+- Add XML documentation for all members
 
 ## Code of Conduct
 
