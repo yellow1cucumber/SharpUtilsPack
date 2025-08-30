@@ -46,8 +46,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Repository\Repository.csproj" />
-  </ItemGroup>
-
 </Project>
